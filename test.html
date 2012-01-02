@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>WebGLEngine</title>
+
+    <style>
+        #container {
+            width: 900px;
+            height: 400px;
+            background-color: #000;
+        }
+
+        #fps {
+            padding: 10px;
+            background-color: #000;
+            width: 30px;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+    </style>
+
+    <script id="texture-shader-fs" type="x-shader/x-fragment">
+        precision mediump float;
+
+        varying vec2 vTextureCoord;
+
+        uniform sampler2D uSampler;
+
+        void main(void) {
+        gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+        }
+    </script>
+
+    <script id="texture-shader-vs" type="x-shader/x-vertex">
+        attribute vec3 aVertexPosition;
+        attribute vec2 aTextureCoord;
+
+        uniform mat4 uMVMatrix;
+        uniform mat4 uPMatrix;
+
+        varying vec2 vTextureCoord;
+
+
+        void main(void) {
+        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+        vTextureCoord = aTextureCoord;
+        }
+    </script>
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+        precision mediump float;
+
+        void main(void)
+        {
+        gl_FragColor = vec4(1,1,1,0);
+        }
+    </script>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+        attribute vec3 aVertexPosition;
+
+        uniform mat4 uMVMatrix;
+        uniform mat4 uPMatrix;
+
+        void main(void)
+        {
+        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+        }
+    </script>
+</head>
+<body>
+<div id="fps"></div>
+<div id="container">
+    <h1>Wait for it...</h1>
+</div>
+
+<script src="js/glMatrix.min.js"></script>
+
+<script src="js/JSBlender/ParseBlend.js"></script>
+<script src="js/JSBlender/file/ByteArray.js"></script>
+<script src="js/JSBlender/dna/DNAField.js"></script>
+<script src="js/JSBlender/dna/DNAFieldInstance.js"></script>
+<script src="js/JSBlender/dna/DNARepository.js"></script>
+<script src="js/JSBlender/dna/DNAStruct.js"></script>
+<script src="js/JSBlender/file/BHeadStruct.js"></script>
+<script src="js/JSBlender/file/BlendFile.js"></script>
+<script src="js/JSBlender/file/BlendFileHeader.js"></script>
+
+<script src="js/WGLE.js"></script>
+<script src="js/WGLE/SceneGraph.js"></script>
+<script src="js/WGLE/Camera.js"></script>
+<script src="js/WGLE/Light.js"></script>
+<script src="js/WGLE/Materials.js"></script>
+<script src="js/WGLE/Object.js"></script>
+<script src="js/WGLE/Shader.js"></script>
+
+<script>
+
+    var wgle = new WGLE('container');
+
+/*    var triangle = WGLE.Object.createTriangle("t1");
+    triangle.shader = WGLE.defaultShader;
+    triangle.z = -7;
+    wgle.addChild(triangle);
+*/
+    var cube = WGLE.Object.createCube("cube1");
+    cube.shader = WGLE.defaultShader;
+    cube.z = -7;
+    cube.x = 5;
+    wgle.addChild(cube);
+
+    var blend = WGLE.Object.loadBlend("assets/EXPEDITconverted.blend", function (obj)
+    {
+        wgle.addChild(blend);
+    });
+    blend.z = -10;
+    blend.y = -5;
+    blend.rotationX = -Math.PI/2;
+
+    wgle.update = function (time, dt)
+    {
+        blend.rotationZ += .0003 * dt;
+    };
+
+</script>
+</body>
+</html>
